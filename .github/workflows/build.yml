@@ -7,13 +7,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: unzip -q DonutRTP-source.zip
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
           cache: maven
-      - run: mvn -B package
+      - run: mvn -B -f DonutRTP/pom.xml package
       - uses: actions/upload-artifact@v4
         with:
           name: DonutRTP
-          path: target/DonutRTP.jar
+          path: DonutRTP/target/DonutRTP.jar
