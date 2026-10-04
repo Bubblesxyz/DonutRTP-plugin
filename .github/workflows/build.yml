@@ -1,20 +1,26 @@
-name: Build plugin
+name: Build patched jar
 on:
   push:
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: unzip -q DonutRTP-source.zip
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
-          cache: maven
-      - run: mvn -B -f DonutRTP/pom.xml package
+      - name: Compile the two changed classes
+        run: mvn -B -q compile
+      - name: Put them into a copy of the original jar
+        run: |
+          mkdir out
+          cp original/donutsmp-rtp-paper-1_5.jar out/donutsmp-rtp-paper-1_5-dialog.jar
+          jar uf out/donutsmp-rtp-paper-1_5-dialog.jar -C target/classes .
+          unzip -l out/donutsmp-rtp-paper-1_5-dialog.jar | grep -E "RtpCommand|RtpDialog"
       - uses: actions/upload-artifact@v4
         with:
-          name: DonutRTP
-          path: DonutRTP/target/DonutRTP.jar
+          name: donutsmp-rtp-dialog-jar
+          path: out/*.jar
