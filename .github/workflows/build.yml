@@ -1,4 +1,4 @@
-name: Build settings plugin
+name: Build shop plugin
 on:
   push:
   workflow_dispatch:
@@ -14,11 +14,10 @@ jobs:
           java-version: 21
       - name: Build
         run: |
-          mkdir sm
-          unzip -q settings-menu-project.zip -d sm
-          mvn -B -q -f sm/pom.xml package
+          mkdir shop
+          unzip -q server-shop-project.zip -d shop
+          mvn -B -q -f shop/pom.xml package
       - uses: actions/upload-artifact@v4
         with:
-          name: SettingsMenu-jar
-          path: sm/target/SettingsMenu.jar
-
+          name: ServerShop-jar
+          path: shop/target/ServerShop.jar
