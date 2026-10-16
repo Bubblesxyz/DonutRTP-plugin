@@ -1,25 +1,31 @@
-name: Build
-
+name: Build SellButton
 on:
   push:
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
-          cache: maven
-
+      - name: Unzip the plugin
+        run: |
+          ZIP=$(ls *.zip | head -n 1)
+          echo "Using $ZIP"
+          mkdir -p work
+          unzip -o "$ZIP" -d work
       - name: Build
-        run: mvn -B package
-
+        run: |
+          POM=$(find work -name pom.xml | head -n 1)
+          echo "Building in $(dirname "$POM")"
+          cd "$(dirname "$POM")"
+          mvn -B package
       - uses: actions/upload-artifact@v4
         with:
           name: SellButton
-          path: target/SellButton.jar
+          path: |
+            work/target/SellButton.jar
+            work/*/target/SellButton.jar
