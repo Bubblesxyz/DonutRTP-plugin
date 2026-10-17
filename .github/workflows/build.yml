@@ -1,4 +1,4 @@
-name: Build shop plugin
+name: Build StackFix
 on:
   push:
   workflow_dispatch:
@@ -14,10 +14,10 @@ jobs:
           java-version: 21
       - name: Build
         run: |
-          mkdir shop
-          unzip -q server-shop-project.zip -d shop
-          mvn -B -q -f shop/pom.xml package
+          mkdir sf
+          unzip -q stackfix-project.zip -d sf
+          mvn -B -q -f sf/pom.xml package
       - uses: actions/upload-artifact@v4
         with:
-          name: ServerShop-jar
-          path: shop/target/ServerShop.jar
+          name: StackFix-jar
+          path: sf/target/StackFix.jar
