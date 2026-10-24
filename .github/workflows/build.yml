@@ -1,4 +1,4 @@
-name: Build orders plugin
+name: Build special items plugin
 on:
   push:
   workflow_dispatch:
@@ -14,10 +14,10 @@ jobs:
           java-version: 21
       - name: Build
         run: |
-          mkdir od
-          unzip -q server-orders-project.zip -d od
-          mvn -B -q -f od/pom.xml package
+          mkdir si
+          unzip -q special-items-project.zip -d si
+          mvn -B -q -f si/pom.xml package
       - uses: actions/upload-artifact@v4
         with:
-          name: ServerOrders-jar
-          path: od/target/ServerOrders.jar
+          name: SpecialItems-jar
+          path: si/target/SpecialItems.jar
