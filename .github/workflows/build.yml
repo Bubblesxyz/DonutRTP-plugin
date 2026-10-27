@@ -19,12 +19,21 @@ jobs:
         with:
           gradle-version: 9.2.0
 
+      - name: Unpack zip if present
+        run: |
+          shopt -s nullglob
+          for z in *.zip; do unzip -o -q "$z"; done
+
       - name: Build
-        run: gradle build --no-daemon
+        run: |
+          f=$(find . -name build.gradle -not -path './.git/*' | head -n1)
+          if [ -z "$f" ]; then echo "No build.gradle found. Upload the zip or its files."; exit 1; fi
+          cd "$(dirname "$f")"
+          gradle build --no-daemon
 
       - uses: actions/upload-artifact@v4
         with:
           name: item-vanisher-jar
           path: |
-            build/libs/*.jar
-            !build/libs/*-sources.jar
+            **/build/libs/*.jar
+            !**/build/libs/*-sources.jar
