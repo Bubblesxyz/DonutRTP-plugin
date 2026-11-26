@@ -1,45 +1,23 @@
-name: build
+name: Build
 on:
   push:
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Unzip source
-        run: |
-          mkdir -p extracted
-          for z in *.zip; do unzip -o -q "$z" -d extracted; done
-
-      - name: Find project folder
-        run: |
-          DIR=$(dirname "$(find extracted -name build.gradle -not -path '*/build/*' | head -n 1)")
-          echo "Project folder: $DIR"
-          echo "PROJECT_DIR=$DIR" >> "$GITHUB_ENV"
-
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
-
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: 9.4.1
-
-      - name: Build jar
-        working-directory: ${{ env.PROJECT_DIR }}
-        run: gradle build --no-daemon
-
-      - name: Collect jar
+          java-version: '21'
+      - name: Unzip the uploaded zip
         run: |
-          mkdir -p out
-          find "$PROJECT_DIR/build/libs" -name '*.jar' ! -name '*-sources.jar' ! -name '*-dev.jar' -exec cp {} out/ \;
-          ls -la out
-
+          mkdir -p build
+          for z in ./*.zip; do unzip -o "$z" -d build; done
+      - name: Build the plugin
+        run: mvn -B -f "$(find build -name pom.xml | head -n 1)" package
       - uses: actions/upload-artifact@v4
         with:
-          name: macrokey-jar
-          path: out/*.jar
+          name: CrafterFix
+          path: build/**/target/CrafterFix.jar
